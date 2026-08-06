@@ -60,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ];
 
     $authenticated = false;
+    $userfound = false;
 
     foreach ($users as $user) {
 
@@ -70,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ) {
 
             $authenticated = true;
+            $userfound = true;
 
             // Store Session
             $_SESSION['user_id'] = $user['user_id'];
@@ -88,13 +90,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             header("Location: dashboard.php");
             exit();
+        } 
+        elseif (
+            $username != $user['username'] &&
+            $email != $user['email'] &&
+            $password != $user['password']
+        ) {
+            $_SESSION['error'] = "Invalid Login Credentials.";
+            header("Location: login.php");
+            exit();
         }
-    }
-
-    if (!$authenticated) {
-        $_SESSION['error'] = "Invalid Login Credentials.";
-        header("Location: login.php");
-        exit();
+         elseif ($username != $user['username']) {
+            $_SESSION['error'] = "User not found.";
+            header("Location: login.php");
+            exit();
+        }
+         elseif ($email != $user['email']) {
+            $_SESSION['error'] = "User email not found.";
+            header("Location: login.php");
+            exit();
+        }
+         elseif ($password != $user['password']) {
+            $_SESSION['error'] = "User password is invalid.";
+            header("Location: login.php");
+            exit();
+        }
     }
 } else {
     header("Location: login.php");

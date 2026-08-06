@@ -1,13 +1,17 @@
 <?php
 
+
+// no needed to check empty fields because we mentioned every field as "required" in our input form in login.php 
+
+
 function validateUsername($username)
 {
-    if (empty($username)) {
-        return "Username is required";
-    }
+    // if (empty($username)) {
+    //     return "Username is required";
+    // } no needed because we mentioned this field is "required" in our input form in login.php 
 
-    if (strlen($username) < 3) {
-        return "Username must be at least 3 characters";
+    if (strlen($username) < 2) {
+        return "Username must be at least 2 characters";
     }
 
     if (!preg_match("/^[a-zA-Z0-9_]+$/", $username)) {
@@ -19,9 +23,9 @@ function validateUsername($username)
 
 function validateEmail($email)
 {
-    if (empty($email)) {
-        return "Email is required";
-    }
+    // if (empty($email)) {
+    //     return "Email is required";
+    // }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         return "Invalid email format";
@@ -32,9 +36,9 @@ function validateEmail($email)
 
 function validatePassword($password)
 {
-    if (empty($password)) {
-        return "Password is required";
-    }
+    // if (empty($password)) {
+    //     return "Password is required";
+    // }
 
     if (strlen($password) < 8) {
         return "Password must be at least 8 characters";
