@@ -33,6 +33,9 @@ if (isset($_COOKIE['user_theme'])) {
     $theme = $_COOKIE['user_theme'];
 }
 
+// checks succesful registration
+$success = $_SESSION['register_success'] ?? '';
+unset($_SESSION['register_success']);
 
 ?>
 
@@ -71,7 +74,7 @@ if (isset($_COOKIE['user_theme'])) {
 </head>
 
 <body class="<?php echo $theme; ?>">
-    <!-- $theme -> if the theme contains dark it changes to dark likewise it changes the theme --> 
+    <!-- $theme -> if the theme contains dark it changes to dark likewise it changes the theme -->
 
     <div class="container vh-100 d-flex justify-content-center align-items-center">
         <div class="card shadow p-4" style="width:400px;">
@@ -80,18 +83,28 @@ if (isset($_COOKIE['user_theme'])) {
             </h2>
 
             <?php
-                if (isset($_SESSION['error'])) {
+            if (isset($_SESSION['error'])) {
                 echo '<div class="alert alert-danger">' . $_SESSION['error'] . '</div>';
                 unset($_SESSION['error']);
-                }
+            }
+            
             ?>
+
+            <?php if ($success != ""): ?>
+
+                <div class="alert alert-success" role="alert">
+                    <?= htmlspecialchars($success) ?>
+                </div>
+
+            <?php endif; ?>
+
 
             <form action="auth.php" method="POST">
 
-                 <!-- Username -->
-                 <div class="mb-3">
-                     <label class="form-label">Username</label>
-                     <input type="text" class="form-control" name="username" placeholder="Enter your Name" value="<?php echo htmlspecialchars($username); ?>" required>
+                <!-- Username -->
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" name="username" placeholder="Enter your Name" value="<?php echo htmlspecialchars($username); ?>" required>
                 </div>
 
                 <!-- Email -->
@@ -114,6 +127,18 @@ if (isset($_COOKIE['user_theme'])) {
 
                 <!-- Login Button -->
                 <button type="submit" class="btn btn-primary w-100">Login</button>
+
+                <div class="text-center mt-3">
+
+                    <span class="text-muted">
+                        Don't have an account?
+                    </span>
+
+                    <a href="register.php" class="text-decoration-none">
+                        Register here
+                    </a>
+
+                </div>
 
             </form>
 

@@ -1,7 +1,9 @@
 <?php
+
 session_start();
 
 require 'includes/validation.php';
+require 'includes/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -11,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $remember = isset($_POST['remember']);
 
     // Validation
+
     $usernameError = validateUsername($username);
 
     if ($usernameError != "") {
@@ -34,89 +37,98 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: login.php");
         exit();
     }
-    // Dummy Users
-    $users = [
-        [
-            "user_id" => 1,
-            "username" => "user1",
-            "email" => "user1@example.com",
-            "password" => "User1@123",
-            "theme" => "dark"
-        ],
-        [
-            "user_id" => 2,
-            "username" => "user2",
-            "email" => "user2@example.com",
-            "password" => "User2@123",
-            "theme" => "warm"
-        ],
-        [
-            "user_id" => 3,
-            "username" => "user3",
-            "email" => "user3@example.com",
-            "password" => "User3@123",
-            "theme" => "light"
-        ]
-    ];
 
-    $authenticated = false;
-    $userfound = false;
+    // Find user in database
 
-    foreach ($users as $user) {
+    $sql = "SELECT *
+            FROM users
+            WHERE username = ? AND email = ?";
+    // The ? values are placeholders. it gets username AND email match what the person entered.
 
-        if (
-            $username == $user['username'] &&
-            $email == $user['email'] &&
-            $password == $user['password']
-        ) {
+    $stmt = $conn->prepare($sql);
+    // This says prepare this SQL query so I'm going to provide the values separately."
+    // $conn is our MySQL connection from db.php.
 
-            $authenticated = true;
-            $userfound = true;
+    $stmt->bind_param("ss", $username, $email);
+    // bind_param -> Binds variables to a prepared statement as parameters
+    // Put the username and email into the "?"
+    // ss means type of two values string, string
 
-            // Store Session
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['theme'] = $user['theme'];
+    $stmt->execute();
 
-            // Remember Me
-            if ($remember) {
-                setcookie("remember_username", $user['username'], time() + 60, "/");
-                setcookie("user_theme", $user['theme'], time() + 60, "/");
-            } else {
-                setcookie("remember_username", "", time() - 60, "/");
-                setcookie("user_theme", $user['theme'], time() + 60, "/");
-            }
+    $result = $stmt->get_result();
 
-            header("Location: dashboard.php");
-            exit();
-        } 
-        elseif (
-            $username != $user['username'] &&
-            $email != $user['email'] &&
-            $password != $user['password']
-        ) {
-            $_SESSION['error'] = "Invalid Login Credentials.";
-            header("Location: login.php");
-            exit();
-        }
-         elseif ($username != $user['username']) {
-            $_SESSION['error'] = "User not found.";
-            header("Location: login.php");
-            exit();
-        }
-         elseif ($email != $user['email']) {
-            $_SESSION['error'] = "User email not found.";
-            header("Location: login.php");
-            exit();
-        }
-         elseif ($password != $user['password']) {
-            $_SESSION['error'] = "User password is invalid.";
-            header("Location: login.php");
-            exit();
-        }
+    // Check if user exists
+
+    if ($result->num_rows === 0) {
+
+        $_SESSION['error'] = "Invalid Login Credentials.";
+        header("Location: login.php");
+        exit();
     }
-} else {
-    header("Location: login.php");
-    exit();
+
+    $user = $result->fetch_assoc();
+    // fetch_assoc() gets the database row as an associative array. 
+    // associative array -> just like we had the dummy users array
+
+
+    // Verify hashed password
+
+
+    if (password_verify($password, $user['password'])) {
+
+        // Store session
+        $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['theme'] = $user['theme'];
+
+        // Remember Me
+        if ($remember) {
+
+            setcookie(
+                "remember_username",
+                $user['username'],
+                time() + 60,
+                "/"
+            );
+
+            setcookie(
+                "user_theme",
+                $user['theme'],
+                time() + 60,
+                "/"
+            );
+
+        } else {
+
+            setcookie(
+                "remember_username",
+                "",
+                time() - 60,
+                "/"
+            );
+
+            setcookie(
+                "user_theme",
+                $user['theme'],
+                time() + 60,
+                "/"
+            );
+        }
+
+        header("Location: dashboard.php");
+        exit();
+
+    } else {
+
+        $_SESSION['error'] = "Invalid Login Credentials.";
+        header("Location: login.php");
+        exit();
+    }
+
+    $stmt->close();
+    $conn->close();
 }
+
+?>
