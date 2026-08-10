@@ -91,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Check if username/email exists
- 
+
 
     $sql = "SELECT user_id
             FROM users
@@ -151,12 +151,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($stmt->execute()) {
 
+        // Save the selected theme in a cookie
+        setcookie(
+            "user_theme",
+            $theme,
+            time() + 3600,
+            "/"
+        );
+
         $_SESSION['register_success'] =
-            "Registration successful!";
+            "Registration successful! Redirecting to login...";
 
-        header("Location: login.php");
+        header("Location: register.php");
         exit();
-
     } else {
 
         $_SESSION['register_error'] =
@@ -175,5 +182,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
     $conn->close();
 }
-
-?>
