@@ -11,6 +11,7 @@ $current_page = basename($_SERVER["PHP_SELF"]);
 |
 */
 
+
 $project_path = rtrim(
     dirname($_SERVER["SCRIPT_NAME"]),
     "/\\"
@@ -23,14 +24,25 @@ $project_path = rtrim(
 |--------------------------------------------------------------------------
 */
 
+
 if (
     strpos($project_path, "/patients") !== false ||
     strpos($project_path, "/visits") !== false ||
+    strpos($project_path, "/account") !== false ||
     strpos($project_path, "/reports") !== false
 ) {
 
     $project_path = dirname($project_path);
 }
+
+
+// ============================================================
+// SESSION DATA
+// ============================================================
+
+$username = $_SESSION["username"] ?? "";
+
+$role = $_SESSION["role"] ?? "";
 
 ?>
 
@@ -60,15 +72,22 @@ if (
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
 
+
+    <!-- Bootstrap Icons -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 </head>
 
 
 <body class="bg-light">
 
 
-    <!-- ================================================= -->
+    <!-- ======================================================== -->
     <!-- NAVBAR -->
-    <!-- ================================================= -->
+    <!-- ======================================================== -->
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
 
@@ -108,7 +127,7 @@ if (
                 class="collapse navbar-collapse"
                 id="mainNavbar">
 
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
 
 
                     <!-- DASHBOARD -->
@@ -175,8 +194,6 @@ if (
                         <ul class="dropdown-menu">
 
 
-                            <!-- FOLLOW-UPS -->
-
                             <li>
 
                                 <a
@@ -189,8 +206,6 @@ if (
 
                             </li>
 
-
-                            <!-- MONTHLY -->
 
                             <li>
 
@@ -205,8 +220,6 @@ if (
                             </li>
 
 
-                            <!-- BIRTHDAYS -->
-
                             <li>
 
                                 <a
@@ -220,8 +233,6 @@ if (
                             </li>
 
 
-                            <!-- SUMMARY -->
-
                             <li>
 
                                 <a
@@ -229,6 +240,123 @@ if (
                                     href="<?= $project_path ?>/reports/summary.php">
 
                                     Full Summary
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    class="dropdown-item"
+                                    href="<?= $project_path ?>/reports/chart.php">
+
+                                    Visit Chart
+
+                                </a>
+
+                            </li>
+
+
+                        </ul>
+
+                    </li>
+
+
+                    <!-- ================================================= -->
+                    <!-- ACCOUNT -->
+                    <!-- ================================================= -->
+
+                    <li class="nav-item dropdown ms-lg-3">
+
+
+                        <a
+                            class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+                            href="#"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
+                            <i class="bi bi-person-circle fs-5"></i>
+
+                            <span>
+                                <?= htmlspecialchars($username) ?>
+                            </span>
+
+                        </a>
+
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+
+
+                            <!-- USERNAME -->
+
+                            <li>
+
+                                <span class="dropdown-item-text">
+
+                                    <strong>
+                                        <?= htmlspecialchars($username) ?>
+                                    </strong>
+
+                                </span>
+
+                            </li>
+
+
+                            <!-- ROLE -->
+
+                            <li>
+
+                                <span class="dropdown-item-text">
+
+                                    <span class="badge bg-primary">
+
+                                        <?= htmlspecialchars(
+                                            ucfirst($role)
+                                        ) ?>
+
+                                    </span>
+
+                                </span>
+
+                            </li>
+
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+
+                            <!-- SWITCH ACCOUNT -->
+
+                            <li>
+
+                                <a
+                                    class="dropdown-item"
+                                    href="<?= $project_path ?>/account/logout.php">
+
+                                    <i class="bi bi-arrow-left-right me-2"></i>
+
+                                    Switch Account
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- LOGOUT -->
+
+                            <li>
+
+                                <a
+                                    class="dropdown-item text-danger"
+                                    href="<?= $project_path ?>/account/logout.php">
+
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+
+                                    Logout
 
                                 </a>
 

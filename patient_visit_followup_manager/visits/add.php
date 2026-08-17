@@ -1,4 +1,7 @@
 <?php
+require_once "../account/auth.php";
+
+requireAdmin();
 
 require_once "../config/db.php";
 

@@ -1,5 +1,9 @@
 <?php
 
+require_once "../account/auth.php";
+
+requireAdmin();
+
 require_once "../config/db.php";
 
 $page_title = "Add Patient";
@@ -9,7 +13,7 @@ $message_type = "";
 
 $name = "";
 $dob = "";
-$join_date = "";
+$join_date = "";    
 $phone = "";
 $address = "";
 

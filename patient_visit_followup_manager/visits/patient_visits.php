@@ -1,5 +1,5 @@
 <?php
-
+require_once "../account/auth.php";
 require_once "../config/db.php";
 
 $page_title = "Patient Visit History";
@@ -240,7 +240,7 @@ require_once "../includes/header.php";
 
             </a>
 
-
+            <?php if ($_SESSION["role"] === "admin"): ?>
             <a
                 href="add.php?patient_id=<?= $patient["patient_id"] ?>"
                 class="btn btn-primary">
@@ -248,6 +248,7 @@ require_once "../includes/header.php";
                 + Add Visit
 
             </a>
+            <?php endif; ?>
 
         </div>
 
@@ -724,6 +725,7 @@ require_once "../includes/header.php";
 
                                     </p>
 
+                                    <?php if ($_SESSION["role"] === "admin"): ?>
                                     <a
                                         href="add.php?patient_id=<?= $patient["patient_id"] ?>"
                                         class="btn btn-primary">
@@ -731,6 +733,8 @@ require_once "../includes/header.php";
                                         Add First Visit
 
                                     </a>
+                                    <?php endif; ?>        
+                                    
 
                                 </td>
 

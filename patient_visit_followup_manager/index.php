@@ -1,5 +1,15 @@
 <?php
 
+session_start();
+
+if (!isset($_SESSION["user_id"])) {
+
+    header("Location: account/login.php");
+
+    exit;
+}
+
+
 require "config/db.php";
 
 $page_title = "Dashboard";
@@ -82,11 +92,13 @@ require "includes/header.php";
                             View Patients
                         </a>
 
-                        <a
-                            href="patients/add.php"
-                            class="btn btn-outline-primary">
-                            Add Patient
-                        </a>
+                        <?php if ($_SESSION["role"] === "admin"): ?>
+                            <a
+                                href="patients/add.php"
+                                class="btn btn-outline-primary">
+                                Add Patient
+                            </a>
+                        <?php endif; ?>
 
                     </div>
 
@@ -98,7 +110,7 @@ require "includes/header.php";
 
 
 
-        <!-- ================================================= -->
+                <!-- ================================================= -->
         <!-- VISITS -->
         <!-- ================================================= -->
 
@@ -146,6 +158,15 @@ require "includes/header.php";
                             View Visits
                         </a>
 
+                        <?php if ($_SESSION["role"] === "admin"): ?>
+
+                            <a
+                                href="patients/list.php?action=add_visit"
+                                class="btn btn-outline-success">
+                                Add Visit
+                            </a>
+
+                        <?php endif; ?>
 
                     </div>
 
@@ -154,8 +175,6 @@ require "includes/header.php";
             </div>
 
         </div>
-
-
 
         <!-- ================================================= -->
         <!-- REPORTS -->
@@ -220,6 +239,8 @@ require "includes/header.php";
         </div>
 
     </div>
+
+
 
 
 
@@ -315,12 +336,14 @@ require "includes/header.php";
 
                     <div class="list-group">
 
-                        <a
-                            href="patients/add.php"
-                            class="list-group-item
+                        <?php if ($_SESSION["role"] === "admin"): ?>
+                            <a
+                                href="patients/add.php"
+                                class="list-group-item
                             list-group-item-action">
-                            Add New Patient
-                        </a>
+                                Add New Patient
+                            </a>
+                        <?php endif; ?>
 
                         <a
                             href="patients/list.php"
@@ -364,7 +387,18 @@ require "includes/header.php";
                             View All Visits
                         </a>
 
-                    </div>
+                        <?php if ($_SESSION["role"] === "admin"): ?>
+
+                            <a
+                                href="patients/list.php?action=add_visit"
+                                class="list-group-item
+                            list-group-item-action">
+                                Add a new visit
+                            </a>
+
+                        <?php endif; ?>
+
+                    </div>  
 
                 </div>
 

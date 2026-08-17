@@ -1,5 +1,6 @@
 <?php
 
+require_once "../account/auth.php";
 require_once "../config/db.php";
 
 $page_title = "Patients";
@@ -164,7 +165,22 @@ if (!$result) {
 
 <div class="container-fluid py-4">
 
+    <?php if (isset($_GET["action"]) && $_GET["action"] === "add_visit"): ?>
+
+        <div class="alert alert-info">
+
+            <strong>Select a patient</strong>
+
+            <br>
+
+            Choose the patient for whom you want to record a new visit.
+
+        </div>
+
+    <?php endif; ?>
+
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+
 
         <div>
 
@@ -178,14 +194,18 @@ if (!$result) {
 
         </div>
 
-        <a
-            href="add.php"
-            class="btn btn-primary">
-            + Register Patient
-        </a>
+        <?php if ($_SESSION["role"] === "admin"): ?>
+
+            <a
+                href="add.php"
+                class="btn btn-primary">
+                + Register Patient
+            </a>
+
+        <?php endif; ?>
+
 
     </div>
-
 
     <!-- ================================================= -->
     <!-- SEARCH & FILTERS -->
@@ -482,11 +502,15 @@ if (!$result) {
                                                 View
                                             </a>
 
-                                            <a
-                                                href="edit.php?id=<?= $row["patient_id"] ?>"
-                                                class="btn btn-sm btn-outline-secondary">
-                                                Edit
-                                            </a>
+                                            <?php if ($_SESSION["role"] === "admin"): ?>
+
+                                                <a
+                                                    href="edit.php?id=<?= $row["patient_id"] ?>"
+                                                    class="btn btn-sm btn-outline-warning">
+                                                    Edit
+                                                </a>
+
+                                            <?php endif; ?>
 
                                         </div>
 

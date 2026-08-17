@@ -1,5 +1,6 @@
 <?php
 
+require_once "../account/auth.php";
 require_once "../config/db.php";
 
 $page_title = "Patient Details";
@@ -147,11 +148,15 @@ require_once "../includes/header.php";
                 Back to Patients
             </a>
 
-            <a
-                href="../visits/add.php?patient_id=<?= $patient["patient_id"] ?>"
-                class="btn btn-primary">
-                + Add Visit
-            </a>
+            <?php if ($_SESSION["role"] === "admin"): ?>
+
+                <a
+                    href="../visits/add.php?patient_id=<?= $patient_id ?>"
+                    class="btn btn-primary">
+                    + Add Visit
+                </a>
+
+            <?php endif; ?>
 
         </div>
 

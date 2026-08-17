@@ -1,5 +1,5 @@
 <?php
-
+require_once "../account/auth.php";
 require_once "../config/db.php";
 
 $page_title = "Visit List";
