@@ -5,3 +5,4 @@ This is repo has the following tasks that are done in Capminds with php, mySQL &
 3. Task 003 - User management
 4. Task 004 - Login system
 5. Task 006 - Patients visit and follow up manager
+6. Task 008 - Ajax healthcare
