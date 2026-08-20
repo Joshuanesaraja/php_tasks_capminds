@@ -46,8 +46,8 @@ if ($method === "GET" && preg_match('/^patients\/([0-9]+)$/', $request, $matches
 
     // request=patients/5 this comes from the response.php
 
-    // $matches[0] = "patients/5";
-    // $matches[1] = "5";
+    // $matches[0] = "patients/5"; -> entire matched string
+    // $matches[1] = "5"; -> the content captured by ([0-9]+)
 
     $id = $matches[1];
 
