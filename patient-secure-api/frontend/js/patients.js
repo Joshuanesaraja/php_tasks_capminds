@@ -14,6 +14,9 @@ async function fetchCsrfToken() {
     const response = await fetch("../api/csrf", {
         method: "GET",
         credentials: "include"
+
+        // the browser sends the PHP session cookie with the API request. Our CSRF token is stored in that PHP session,
+        // so the backend needs the same session to retrieve and validate the token sent through the X-CSRF-Token header.
     });
 
     const data = await response.json();

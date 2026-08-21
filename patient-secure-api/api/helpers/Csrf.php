@@ -21,6 +21,7 @@ function validateCsrfToken()
 
     $headers = getallheaders();
     $csrfToken = $headers["X-CSRF-Token"] ?? "";
+    // The backend gets: X-CSRF-Token from the request header.
 
     if (
         empty($_SESSION["csrf_token"]) ||
