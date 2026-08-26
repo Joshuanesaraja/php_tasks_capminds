@@ -8,3 +8,4 @@ This is repo has the following tasks that are done in Capminds with php, mySQL &
 6. Task 008 - Ajax healthcare
 7. Task 009 - Patient Management using REST API (patient-api)
 8. Task 010 - Implement AES encryption and CSRF protection (patient-secure-api)
+9. Task 011 - REST API with JWT Authentication (patient-api-jwt)
