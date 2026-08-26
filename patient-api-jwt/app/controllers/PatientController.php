@@ -12,11 +12,13 @@ class PatientController
         $this->patientModel = new Patient();
     }
 
-    // GET 
+    // GET
 
     public function getAll(&$request)
     {
-        $patients = $this->patientModel->getAll();
+        $userId = $request['user']['user_id'];
+
+        $patients = $this->patientModel->getAll($userId);
 
         Response::json([
             'user' => $request['user']['email'],
@@ -24,7 +26,7 @@ class PatientController
         ]);
     }
 
-    // POST/ CREATE
+    // POST
 
     public function create(&$request)
     {
@@ -42,7 +44,10 @@ class PatientController
             ], 400);
         }
 
+        $userId = $request['user']['user_id'];
+
         $created = $this->patientModel->create(
+            $userId,
             trim($body['name']),
             (int)$body['age'],
             trim($body['gender']),
@@ -61,17 +66,22 @@ class PatientController
         ], 201);
     }
 
-    // PUT/ UPDATE 
+    // PUT
 
     public function update(&$request, $matches)
     {
         $id = (int)$matches[1];
 
-        $patient = $this->patientModel->findById($id);
+        $userId = $request['user']['user_id'];
+
+        $patient = $this->patientModel->findById(
+            $id,
+            $userId
+        );
 
         if (!$patient) {
             Response::json([
-                'message' => 'Patient not found'
+                'message' => 'Patient not found or access denied'
             ], 404);
         }
 
@@ -91,6 +101,7 @@ class PatientController
 
         $updated = $this->patientModel->update(
             $id,
+            $userId,
             trim($body['name']),
             (int)$body['age'],
             trim($body['gender']),
@@ -108,22 +119,30 @@ class PatientController
             'message' => 'Patient updated successfully'
         ]);
     }
-    
+
     // DELETE
 
     public function delete(&$request, $matches)
     {
         $id = (int)$matches[1];
 
-        $patient = $this->patientModel->findById($id);
+        $userId = $request['user']['user_id'];
+
+        $patient = $this->patientModel->findById(
+            $id,
+            $userId
+        );
 
         if (!$patient) {
             Response::json([
-                'message' => 'Patient not found'
+                'message' => 'Patient not found or access denied'
             ], 404);
         }
 
-        $deleted = $this->patientModel->delete($id);
+        $deleted = $this->patientModel->delete(
+            $id,
+            $userId
+        );
 
         if (!$deleted) {
             Response::json([

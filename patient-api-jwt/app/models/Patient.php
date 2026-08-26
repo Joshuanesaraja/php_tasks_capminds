@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../core/Database.php';
+require_once __DIR__ . '/../helpers/Encryption.php';
 
 class Patient
 {
@@ -12,87 +13,150 @@ class Patient
         $this->connection = $database->getConnection();
     }
 
-    // GET
+    // GET ALL PATIENTS FOR LOGGED-IN USER
 
-    public function getAll()
-    {
-        $result = $this->connection->query(
-            "SELECT * FROM patients ORDER BY id DESC"
-        );
-
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
-
-    // POST
-
-    public function create($name, $age, $gender, $phone, $address)
+    public function getAll($userId)
     {
         $stmt = $this->connection->prepare(
-            "INSERT INTO patients
-        (name, age, gender, phone, address)
-        VALUES (?, ?, ?, ?, ?)"
+            "SELECT * FROM patients
+             WHERE user_id = ?
+             ORDER BY id DESC"
         );
 
-        $stmt->bind_param(
-            "sisss",
-            $name,
-            $age,
-            $gender,
-            $phone,
-            $address
-        );
-
-        return $stmt->execute();
-    }
-
-    // find by id
-
-    public function findById($id)
-    {
-        $stmt = $this->connection->prepare(
-            "SELECT * FROM patients WHERE id = ?"
-        );
-
-        $stmt->bind_param("i", $id);
+        $stmt->bind_param("i", $userId);
         $stmt->execute();
 
         $result = $stmt->get_result();
 
-        return $result->fetch_assoc();
+        $patients = $result->fetch_all(MYSQLI_ASSOC);
+
+        foreach ($patients as &$patient) {
+
+            $patient['name'] = decryptData($patient['name']);
+            $patient['age'] = (int) decryptData($patient['age']);
+            $patient['gender'] = decryptData($patient['gender']);
+            $patient['phone'] = decryptData($patient['phone']);
+            $patient['address'] = decryptData($patient['address']);
+        }
+
+        return $patients;
     }
 
-    // UPDATE
+    // CREATE
 
-    public function update($id, $name, $age, $gender, $phone, $address)
-    {
+    public function create(
+        $userId,
+        $name,
+        $age,
+        $gender,
+        $phone,
+        $address
+    ) {
+        $encryptedName = encryptData($name);
+        $encryptedAge = encryptData((string)$age);
+        $encryptedGender = encryptData($gender);
+        $encryptedPhone = encryptData($phone);
+        $encryptedAddress = encryptData($address);
+
         $stmt = $this->connection->prepare(
-            "UPDATE patients
-         SET name = ?, age = ?, gender = ?, phone = ?, address = ?
-         WHERE id = ?"
+            "INSERT INTO patients
+            (user_id, name, age, gender, phone, address)
+            VALUES (?, ?, ?, ?, ?, ?)"
         );
 
         $stmt->bind_param(
-            "sisssi",
-            $name,
-            $age,
-            $gender,
-            $phone,
-            $address,
-            $id
+            "isssss",
+            $userId,
+            $encryptedName,
+            $encryptedAge,
+            $encryptedGender,
+            $encryptedPhone,
+            $encryptedAddress
         );
 
         return $stmt->execute();
     }
 
-    // DELETE 
+    // FIND BY ID FOR LOGGED-IN USER
 
-    public function delete($id)
+    public function findById($id, $userId)
     {
         $stmt = $this->connection->prepare(
-            "DELETE FROM patients WHERE id = ?"
+            "SELECT * FROM patients
+             WHERE id = ? AND user_id = ?"
         );
 
-        $stmt->bind_param("i", $id);
+        $stmt->bind_param("ii", $id, $userId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        $patient = $result->fetch_assoc();
+
+        if (!$patient) {
+            return null;
+        }
+
+        $patient['name'] = decryptData($patient['name']);
+        $patient['age'] = (int) decryptData($patient['age']);
+        $patient['gender'] = decryptData($patient['gender']);
+        $patient['phone'] = decryptData($patient['phone']);
+        $patient['address'] = decryptData($patient['address']);
+
+        return $patient;
+    }
+
+    // UPDATE
+
+    public function update(
+        $id,
+        $userId,
+        $name,
+        $age,
+        $gender,
+        $phone,
+        $address
+    ) {
+        $encryptedName = encryptData($name);
+        $encryptedAge = encryptData((string)$age);
+        $encryptedGender = encryptData($gender);
+        $encryptedPhone = encryptData($phone);
+        $encryptedAddress = encryptData($address);
+
+        $stmt = $this->connection->prepare(
+            "UPDATE patients
+             SET name = ?,
+                 age = ?,
+                 gender = ?,
+                 phone = ?,
+                 address = ?
+             WHERE id = ? AND user_id = ?"
+        );
+
+        $stmt->bind_param(
+            "sssssii",
+            $encryptedName,
+            $encryptedAge,
+            $encryptedGender,
+            $encryptedPhone,
+            $encryptedAddress,
+            $id,
+            $userId
+        );
+
+        return $stmt->execute();
+    }
+
+    // DELETE
+
+    public function delete($id, $userId)
+    {
+        $stmt = $this->connection->prepare(
+            "DELETE FROM patients
+             WHERE id = ? AND user_id = ?"
+        );
+
+        $stmt->bind_param("ii", $id, $userId);
 
         return $stmt->execute();
     }

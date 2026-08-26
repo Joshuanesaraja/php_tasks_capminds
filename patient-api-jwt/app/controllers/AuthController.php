@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../helpers/Response.php';
 require_once __DIR__ . '/../helpers/JWT.php';
+require_once __DIR__ . '/../helpers/Encryption.php';
 
 class AuthController
 {
@@ -13,7 +14,7 @@ class AuthController
         $this->userModel = new User();
     }
 
-    // register request
+    // REGISTER
 
     public function register(&$request)
     {
@@ -69,7 +70,7 @@ class AuthController
         ], 201);
     }
 
-    // login request
+    // LOGIN
 
     public function login(&$request)
     {
@@ -89,8 +90,6 @@ class AuthController
 
         $user = $this->userModel->findByEmail($email);
 
-        // validation
-        
         if (!$user) {
             Response::json([
                 'message' => 'Invalid email or password'
@@ -108,9 +107,11 @@ class AuthController
         $issuedAt = time();
         $expiry = $issuedAt + $config['jwt_expiry'];
 
+        $decryptedEmail = decryptData($user['email']);
+
         $payload = [
             'user_id' => $user['id'],
-            'email' => $user['email'],
+            'email' => $decryptedEmail,
             'iat' => $issuedAt,
             'exp' => $expiry
         ];

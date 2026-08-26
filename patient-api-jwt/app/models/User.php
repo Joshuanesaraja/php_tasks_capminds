@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../core/Database.php';
+require_once __DIR__ . '/../helpers/Encryption.php';
 
 class User
 {
@@ -12,27 +13,35 @@ class User
         $this->connection = $database->getConnection();
     }
 
-    // check whether user is already existing
+    // Find user by decrypted email
 
     public function findByEmail($email)
     {
-        $stmt = $this->connection->prepare(
-            "SELECT * FROM users WHERE email = ?"
+        $result = $this->connection->query(
+            "SELECT * FROM users ORDER BY id ASC"
         );
 
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
+        $users = $result->fetch_all(MYSQLI_ASSOC);
 
-        $result = $stmt->get_result();
+        foreach ($users as $user) {
 
-        return $result->fetch_assoc();
+            $decryptedEmail = decryptData($user['email']);
+
+            if ($decryptedEmail === $email) {
+                return $user;
+            }
+        }
+
+        return null;
     }
 
-
-    // POST create new user
+    // Create user
 
     public function create($name, $email, $hashedPassword)
     {
+        $encryptedName = encryptData($name);
+        $encryptedEmail = encryptData($email);
+
         $stmt = $this->connection->prepare(
             "INSERT INTO users (name, email, password)
              VALUES (?, ?, ?)"
@@ -40,8 +49,8 @@ class User
 
         $stmt->bind_param(
             "sss",
-            $name,
-            $email,
+            $encryptedName,
+            $encryptedEmail,
             $hashedPassword
         );
 
