@@ -2,7 +2,7 @@
 
 class JWT
 {
-    // Create Base64URL Encoder (JWT uses a special Base64 format) 
+    // This converts data into the Base64URL format used by JWT.
     private static function base64UrlEncode($data)
     {
         return rtrim(
@@ -34,11 +34,14 @@ class JWT
             'typ' => 'JWT'
         ]);
 
+        // encode header into base64 format
         $base64UrlHeader = self::base64UrlEncode($header);
 
-        // Payload -> our json object
+        
+        // then encode payload into base64 format
         $base64UrlPayload = self::base64UrlEncode(
             json_encode($payload)
+            // first convert payload into json object
         );
 
         // Signature

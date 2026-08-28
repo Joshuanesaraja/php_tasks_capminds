@@ -106,7 +106,7 @@ class Patient
         return $patient;
     }
 
-    // UPDATE
+    // PUT/ UPDATE
 
     public function update(
         $id,
