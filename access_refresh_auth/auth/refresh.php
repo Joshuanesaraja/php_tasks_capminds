@@ -9,6 +9,7 @@ use Firebase\JWT\Key;
 
 header("Content-Type: application/json");
 
+// validate Refresh token
 
 // 1. Check if refresh token cookie exists
 
@@ -125,7 +126,7 @@ if ($decoded->user_id != $tokenData["user_id"]) {
     exit;
 }
 
-// after every validation ends....
+// after every validation ends.... Refresh token rotation
 
 // Generate new Access Token
 
