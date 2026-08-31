@@ -66,6 +66,7 @@ $refreshToken = JWT::encode([
     "exp" => $issuedAt + $refreshTokenExpiry
 ], $jwtSecret, "HS256");
 
+
 // hash refresh token to store it in db
 
 $refreshTokenHash = hash("sha256", $refreshToken);
