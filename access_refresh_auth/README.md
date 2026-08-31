@@ -1,4 +1,3 @@
-Sure — keep it simple and focused on what we actually implemented.
 
 ````markdown
 # Access & Refresh Token Authentication
